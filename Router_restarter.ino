@@ -6,9 +6,6 @@ const char* password = "qwe12345"; // fill in here your router or wifi password
 #define MAX_RECONNECT_COUNT 5
 #define RELAY_OFF_TIME_MS 10000
 #define LOOP_SLEEP_MS 5000
-WiFiServer server(80);
-
- 
 
 bool reconnectWifi(){
   bool result = false;
@@ -55,26 +52,9 @@ void setup()
   Serial.println();
   Serial.print("Connecting to ");
   Serial.println(ssid);
+
+  //Start WIFI
   reconnectWifi();
-  // WiFi.begin(ssid, password);
- 
-  // while (WiFi.status() != WL_CONNECTED) 
-  // {
-  //   delay(500);
-  //   Serial.print(".");
-  // }
-  // Serial.println("");
-  // Serial.println("WiFi connected");
- 
-  // Start the server
-  server.begin();
-  Serial.println("Server started");
- 
-  // Print the IP address
-  Serial.print("Use this URL to connect: ");
-  Serial.print("https://192.168.0.178/");
-  Serial.print(WiFi.localIP());
-  Serial.println("/");
  
 }
 
