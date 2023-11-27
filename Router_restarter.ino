@@ -1,11 +1,15 @@
 #include <ESP8266WiFi.h>
+#include <ESP8266Ping.h>
  
-const char* ssid = "testwifi"; // fill in here your router or wifi SSID
-const char* password = "qwe12345"; // fill in here your router or wifi password
+const char* ssid = "pkgalaxy"; // fill in here your router or wifi SSID
+const char* password = "mbez4354"; // fill in here your router or wifi password
  #define RELAY 0 // relay connected to  GPIO0
 #define MAX_RECONNECT_COUNT 5
 #define RELAY_OFF_TIME_MS 10000
 #define LOOP_SLEEP_MS 5000
+
+#define MAX_DISCONNECT_TIME_MINUTES 2
+#define MAX_DISCONNECT_TIME_MS 60000*MAX_DISCONNECT_TIME_MINUTES 
 
 bool reconnectWifi(){
   bool result = false;
@@ -39,7 +43,7 @@ bool reconnectWifi(){
   // Print ESP8266 Local IP Address
   
 }
-
+unsigned long lastmilis;
 void setup() 
 {
   Serial.begin(115200); // must be same baudrate with the Serial Monitor
@@ -52,7 +56,7 @@ void setup()
   Serial.println();
   Serial.print("Connecting to ");
   Serial.println(ssid);
-
+  lastmilis = millis();
   //Start WIFI
   reconnectWifi();
  
@@ -63,25 +67,38 @@ void switchRelay(uint8_t value){
   Serial.println(value);
   digitalWrite(RELAY, value);
 }
+
+bool checkInternetConnection(){
+  bool pingResult = Ping.ping("www.google.com");
+  if(!pingResult){
+    pingResult = Ping.ping("www.wp.pl"); 
+  }
+  return pingResult;
+}
  
-int reconnectCount = 0;
+
 void loop() 
 {
   Serial.println("Loop start");
+  unsigned long currentMillis = millis();
   if(reconnectWifi()){
-    delay(LOOP_SLEEP_MS);
-    reconnectCount = 0;
-    return;
+    if(checkInternetConnection()){
+      lastmilis=currentMillis;
+      delay(LOOP_SLEEP_MS);
+      return;
+    }
   }
 
-  reconnectCount++;
-  Serial.print("Reconnect count=");
-  Serial.println(reconnectCount);
-  if(reconnectCount>MAX_RECONNECT_COUNT){
+
+  unsigned long reconnectTime = currentMillis-lastmilis;
+  Serial.print("Reconnect time=");
+  Serial.println(reconnectTime/1000.0);
+  if(reconnectTime>MAX_DISCONNECT_TIME_MS){
     //reset router
     switchRelay(LOW);
     delay(RELAY_OFF_TIME_MS);
     switchRelay(HIGH);
+    lastmilis=millis();
     return;
     
   }
