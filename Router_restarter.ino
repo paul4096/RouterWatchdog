@@ -1,15 +1,10 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266Ping.h>
- 
-const char* ssid = "pkgalaxy"; // fill in here your router or wifi SSID
-const char* password = "mbez4354"; // fill in here your router or wifi password
- #define RELAY 0 // relay connected to  GPIO0
-#define MAX_RECONNECT_COUNT 5
-#define RELAY_OFF_TIME_MS 10000
-#define LOOP_SLEEP_MS 5000
+#include "userData.h"
+#include "config.h"
+const char* ssid = SSID; // fill in here your router or wifi SSID
+const char* password = PASSWORD; // fill in here your router or wifi password
 
-#define MAX_DISCONNECT_TIME_MINUTES 2
-#define MAX_DISCONNECT_TIME_MS 60000*MAX_DISCONNECT_TIME_MINUTES 
 
 bool reconnectWifi(){
   bool result = false;
